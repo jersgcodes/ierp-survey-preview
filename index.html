@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>Survey v2 — interactive preview</title><style>
+<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><meta http-equiv='Cache-Control' content='no-cache, no-store, must-revalidate'><title>Survey v2 — interactive preview</title><style>
 *{box-sizing:border-box}
 body{font:13px/1.55 -apple-system,Helvetica,Arial,sans-serif;color:#0f172a;background:#f1f5f9;max-width:860px;margin:0 auto;padding:20px 16px 90px}
 h1{font-size:21px;margin:0 0 2px}
@@ -113,7 +113,7 @@ function complianceSec(){
     const tier=q.tier==='preferred'?'Preferred':'Mandatory';
     const body=(q.body_sections||[]).map(s=>s.paragraph||'').join(' ').trim();
     const role=q.answer_kind==='role_picker'&&q.role_options;
-    const ctrl=role?radio(q.id,q.role_options.map(o=>({v:o.value,l:o.label}))):ynr(q.id);
+    const ctrl=role?radio(q.id,q.role_options.map(o=>({v:(o.id||o.value),l:o.label}))):ynr(q.id);
     h+='<div class="q"><div class="qh">'+chip(tier)+'<span class="qt">'+esc(q.topic||q.id)+'</span>'+(role?'':ctrl)+'</div>';
     if(role) h+='<div class="ctrlrow">'+ctrl+'</div>';
     if(q.question) h+='<div class="qq">'+nl2br(q.question)+'</div>';
