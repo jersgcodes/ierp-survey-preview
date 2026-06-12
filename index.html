@@ -61,7 +61,7 @@ function setAns(k,v){ if(!v) delete S.ans[k]; else S.ans[k]=v; render(); }
 function setMod(s,on){ if(on) S.mods[s]=1; else delete S.mods[s]; render(); }
 function splitFeat(f){ const i=f.indexOf(' - '); return i<0?{t:f,d:''}:{t:f.slice(0,i),d:f.slice(i+3)}; }
 function chip(t){ const m=(t||'').toLowerCase().indexOf('mand')===0; return '<span class="chip '+(m?'m':'p')+'">'+esc(t)+'</span>'; }
-function radio(key,opts){ return '<span class="yn">'+opts.map(o=>'<label><input type="radio" data-key="'+key+'" value="'+o.v+'" '+(S.ans[key]===o.v?'checked':'')+'>'+esc(o.l)+'</label>').join('')+'</span>'; }
+function radio(key,opts){ const nm='r_'+key.replace(/[^a-zA-Z0-9_]/g,'_'); return '<span class="yn">'+opts.map(o=>'<label><input type="radio" name="'+nm+'" data-key="'+key+'" value="'+o.v+'" '+(S.ans[key]===o.v?'checked':'')+'>'+esc(o.l)+'</label>').join('')+'</span>'; }
 function ynr(key){ return radio(key,[{v:'yes',l:'Yes'},{v:'no',l:'No'}]); }
 function check(key,label,desc){ return '<li class="b"><label class="bl"><div class="bn">'+esc(label)+'</div>'+(desc?'<div class="bd">'+esc(desc)+'</div>':'')+'</label><input type="checkbox" data-key="'+key+'" '+(S.ans[key]==='yes'?'checked':'')+'></li>'; }
 function feats(sm){ if(!(sm.features||[]).length) return ''; return '<ul class="feats">'+sm.features.map(f=>{const x=splitFeat(f);return '<li>'+esc(x.t)+(x.d?' — '+esc(x.d):'')+'</li>';}).join('')+'</ul>'; }
@@ -83,15 +83,27 @@ function moduleStatus(slug){
 }
 function banner(st){ const M={passed:['ok','✓ Qualifies — at least one core capability + all mandatory met.'],disqualified:['bad','✗ Disqualified — this module cannot be submitted.'],incomplete:['warn','○ Incomplete — more answers needed.']}; return '<div class="ban '+M[st][0]+'">'+M[st][1]+'</div>'; }
 
+function solutionGate(){
+  // §1 solution-level mandatory: compliance Y/N + the internal-integration
+  // umbrella must be Yes. Returns {no, blank} counts of unmet items.
+  let no=0, blank=0;
+  for(const q of D.compliance){
+    if(q.applies_when){ let vis=true; for(const k in q.applies_when){ if(S.ans[k]!==q.applies_when[k]) vis=false; } if(!vis) continue; }
+    if(q.tier==='mandatory' && q.answer_kind!=='role_picker'){ const v=S.ans[q.id]; if(v==='no') no++; else if(v!=='yes') blank++; }
+  }
+  const ib=S.ans['s1b']; if(ib==='no') no++; else if(ib!=='yes') blank++;
+  return {no, blank};
+}
 function topBanner(){
   const sel=D.moduleOrder.filter(m=>S.mods[m.slug]);
-  if(!sel.length) return '<div class="ban warn">Select at least 3 modules in §2 to begin.</div>';
+  const sg=solutionGate();
+  if(!sel.length) return '<div class="ban warn">Answer §1, then select at least 3 modules in §2 to begin.</div>';
   const cnt=sel.filter(m=>m.slug!=='others').length;
   const sts=sel.map(m=>moduleStatus(m.slug));
-  if(cnt>=3 && sts.every(s=>s==='passed')) return '<div class="ban ok">✓ All '+sel.length+' selected module(s) qualify — the survey is ready to submit.</div>';
   const dq=sts.filter(s=>s==='disqualified').length;
-  if(dq) return '<div class="ban bad">✗ '+dq+' selected module(s) disqualified — resolve before submitting.</div>';
-  return '<div class="ban warn">In progress — complete every selected module (at least 3 required).</div>';
+  if(sg.no || dq) return '<div class="ban bad">✗ Blocked — resolve '+(sg.no?'§1 compliance/integration answered “No”'+(dq?' and ':''):'')+(dq?dq+' disqualified module(s)':'')+' before submitting.</div>';
+  if(cnt>=3 && sg.blank===0 && sts.every(s=>s==='passed')) return '<div class="ban ok">✓ §1 complete and all '+sel.length+' selected module(s) qualify — ready to submit.</div>';
+  return '<div class="ban warn">In progress — complete §1 and every selected module (at least 3 required).</div>';
 }
 
 function complianceSec(){
@@ -178,10 +190,12 @@ function s3Sec(){
 }
 
 function render(){
+  const y=window.scrollY;
   document.getElementById('app').innerHTML =
     '<h1>Survey v2 — Vendor Self-Assessment</h1>'+
     '<p class="note">Interactive read-only preview. Nothing is saved or submitted; answers reset on refresh. Mirrors the live survey\'s gating logic.</p>'+
     topBanner()+complianceSec()+modulesSec()+s3Sec();
+  window.scrollTo(0,y);
 }
 const app=document.getElementById('app');
 app.addEventListener('change',e=>{const t=e.target;
