@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><meta http-equiv='Cache-Control' content='no-cache, no-store, must-revalidate'><title>Survey v2 — interactive preview</title><style>
+<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><meta http-equiv='Cache-Control' content='no-cache, no-store, must-revalidate'><title>Survey v2 - interactive preview</title><style>
 *{box-sizing:border-box}
 body{font:13px/1.55 -apple-system,Helvetica,Arial,sans-serif;color:#0f172a;background:#f1f5f9;max-width:860px;margin:0 auto;padding:20px 16px 90px}
 h1{font-size:21px;margin:0 0 2px}
@@ -64,7 +64,7 @@ function chip(t){ const m=(t||'').toLowerCase().indexOf('mand')===0; return '<sp
 function radio(key,opts){ const nm='r_'+key.replace(/[^a-zA-Z0-9_]/g,'_'); return '<span class="yn">'+opts.map(o=>'<label><input type="radio" name="'+nm+'" data-key="'+key+'" value="'+o.v+'" '+(S.ans[key]===o.v?'checked':'')+'>'+esc(o.l)+'</label>').join('')+'</span>'; }
 function ynr(key){ return radio(key,[{v:'yes',l:'Yes'},{v:'no',l:'No'}]); }
 function check(key,label,desc){ return '<li class="b"><label class="bl"><div class="bn">'+esc(label)+'</div>'+(desc?'<div class="bd">'+esc(desc)+'</div>':'')+'</label><input type="checkbox" data-key="'+key+'" '+(S.ans[key]==='yes'?'checked':'')+'></li>'; }
-function feats(sm){ if(!(sm.features||[]).length) return ''; return '<ul class="feats">'+sm.features.map(f=>{const x=splitFeat(f);return '<li>'+esc(x.t)+(x.d?' — '+esc(x.d):'')+'</li>';}).join('')+'</ul>'; }
+function feats(sm){ if(!(sm.features||[]).length) return ''; return '<ul class="feats">'+sm.features.map(f=>{const x=splitFeat(f);return '<li>'+esc(x.t)+(x.d?' - '+esc(x.d):'')+'</li>';}).join('')+'</ul>'; }
 function capList(caps){ return (caps||[]).length?'<ul class="feats">'+caps.map(c=>'<li>'+esc(c)+'</li>').join('')+'</ul>':''; }
 function inpCue(k){ const m={text:'Short answer',date:'Date',upload:'Attachment'}; return '<span class="ph">'+(m[k]||k)+'</span>'; }
 
@@ -81,7 +81,7 @@ function moduleStatus(slug){
   if(hasCore&&!coreYes) return 'incomplete';
   return 'passed';
 }
-function banner(st){ const M={passed:['ok','✓ Qualifies — at least one core capability + all mandatory met.'],disqualified:['bad','✗ Disqualified — this module cannot be submitted.'],incomplete:['warn','○ Incomplete — more answers needed.']}; return '<div class="ban '+M[st][0]+'">'+M[st][1]+'</div>'; }
+function banner(st){ const M={passed:['ok','✓ Qualifies - at least one core capability + all mandatory met.'],disqualified:['bad','✗ Disqualified - this module cannot be submitted.'],incomplete:['warn','○ Incomplete - more answers needed.']}; return '<div class="ban '+M[st][0]+'">'+M[st][1]+'</div>'; }
 
 function solutionGate(){
   // §1 solution-level mandatory: compliance Y/N + the internal-integration
@@ -101,9 +101,9 @@ function topBanner(){
   const cnt=sel.filter(m=>m.slug!=='others').length;
   const sts=sel.map(m=>moduleStatus(m.slug));
   const dq=sts.filter(s=>s==='disqualified').length;
-  if(sg.no || dq) return '<div class="ban bad">✗ Blocked — resolve '+(sg.no?'§1 compliance/integration answered “No”'+(dq?' and ':''):'')+(dq?dq+' disqualified module(s)':'')+' before submitting.</div>';
-  if(cnt>=3 && sg.blank===0 && sts.every(s=>s==='passed')) return '<div class="ban ok">✓ §1 complete and all '+sel.length+' selected module(s) qualify — ready to submit.</div>';
-  return '<div class="ban warn">In progress — complete §1 and every selected module (at least 3 required).</div>';
+  if(sg.no || dq) return '<div class="ban bad">✗ Blocked - resolve '+(sg.no?'§1 compliance/integration answered “No”'+(dq?' and ':''):'')+(dq?dq+' disqualified module(s)':'')+' before submitting.</div>';
+  if(cnt>=3 && sg.blank===0 && sts.every(s=>s==='passed')) return '<div class="ban ok">✓ §1 complete and all '+sel.length+' selected module(s) qualify - ready to submit.</div>';
+  return '<div class="ban warn">In progress - complete §1 and every selected module (at least 3 required).</div>';
 }
 
 function complianceSec(){
@@ -126,7 +126,7 @@ function complianceSec(){
   h+='<div class="sh">§1c · ERP-Wide AI Features</div>';
   h+='<div class="q"><div class="qh">'+chip('Preferred')+'<span class="qt">AI Features</span>'+ynr('s1c')+'</div><div class="qq">'+esc(D.ai.umbrella)+'</div>';
   if(yn('s1c')==='yes'){ h+='<p class="hint">Select all that apply.</p><ul class="bl-list">';
-    D.ai.caps.forEach((c,i)=>{ h+= c.kind==='free_text'?check('s1c:other','Others — please specify',c.description||''):check('s1c:ex:'+i,c.name,c.description||''); });
+    D.ai.caps.forEach((c,i)=>{ h+= c.kind==='free_text'?check('s1c:other','Others - please specify',c.description||''):check('s1c:ex:'+i,c.name,c.description||''); });
     h+='</ul>';
     if(S.ans['s1c:other']==='yes') h+='<textarea class="ta" data-txt="s1c:othertext" placeholder="Please define your other AI features.">'+esc(S.txt['s1c:othertext']||'')+'</textarea>';
   }
@@ -147,7 +147,7 @@ function moduleBlock(m){
   h+='<div class="q"><div class="qh">'+chip('Preferred')+'<span class="qt">AI Features</span>'+ynr(m.slug+':ai')+'</div><div class="qq">'+esc(m.ai_features.umbrella)+'</div>';
   if(yn(m.slug+':ai')==='yes'){ h+='<p class="hint">Select all that apply.</p><ul class="bl-list">';
     (m.ai_features.examples||[]).forEach((ex,i)=>{ const x=splitFeat(ex); h+=check(m.slug+':ai:ex:'+i,x.t,x.d); });
-    if(m.ai_features.others) h+=check(m.slug+':ai:other','Others — please define','');
+    if(m.ai_features.others) h+=check(m.slug+':ai:other','Others - please define','');
     h+='</ul>';
     if(m.ai_features.others && S.ans[m.slug+':ai:other']==='yes') h+='<textarea class="ta" data-txt="'+m.slug+':ai:othertext" placeholder="Please define.">'+esc(S.txt[m.slug+':ai:othertext']||'')+'</textarea>';
   }
@@ -157,7 +157,7 @@ function moduleBlock(m){
 function othersBlock(){
   let h='<div class="mod"><div class="modh">1000 · Others / Cross-cutting</div>'+banner(moduleStatus('others'));
   h+='<div class="q"><div class="qh">'+chip('Mandatory')+'<span class="qt">Describe the other module(s)</span></div><textarea class="ta" data-txt="others:describe" placeholder="Describe the other module(s) your solution provides...">'+esc(S.txt['others:describe']||'')+'</textarea></div>';
-  h+='<div class="q"><div class="qh">'+chip('Mandatory')+'<span class="qt">Evidence — Track Record</span>'+ynr('others:evidence')+'</div><div class="qq">Submit 3 completed project proposals (modules covered, completion proofs, dates, billed costs, client sectors).</div>';
+  h+='<div class="q"><div class="qh">'+chip('Mandatory')+'<span class="qt">Evidence - Track Record</span>'+ynr('others:evidence')+'</div><div class="qq">Submit 3 completed project proposals (modules covered, completion proofs, dates, billed costs, client sectors).</div>';
   h+='<p class="hint">Clients\' sector(s):</p><div class="secs">'+D.sectors.map(o=>'<label class="sec"><input type="checkbox" data-key="others:sector:'+o.value+'" '+(S.ans['others:sector:'+o.value]==='yes'?'checked':'')+'>'+esc(o.label)+'</label>').join('')+'</div></div></div>';
   return h;
 }
@@ -174,7 +174,7 @@ function modulesSec(){
 
 function s3Sec(){
   let h='<h2>§3 · Third-Party Integration (optional)</h2>';
-  h+='<div class="q"><div class="qh">'+chip('Preferred')+'<span class="qt">Third-Party Integration Experience</span>'+ynr('s3:done')+'</div><div class="qq">Have you completed any third-party integrations — integrating an external module or application into your solution at a customer\'s request?</div></div>';
+  h+='<div class="q"><div class="qh">'+chip('Preferred')+'<span class="qt">Third-Party Integration Experience</span>'+ynr('s3:done')+'</div><div class="qq">Have you completed any third-party integrations - integrating an external module or application into your solution at a customer\'s request?</div></div>';
   if(yn('s3:done')==='yes'){
     h+='<div class="q"><div class="qh"><span class="qt">Which third-party ERP module types can your solution integrate with?</span></div><p class="hint">Select all that apply.</p><ul class="bl-list">';
     D.moduleOrder.filter(m=>m.slug!=='others').forEach(m=>{ h+=check('s3:type:'+m.slug,m.full,''); });
@@ -192,7 +192,7 @@ function s3Sec(){
 function render(){
   const y=window.scrollY;
   document.getElementById('app').innerHTML =
-    '<h1>Survey v2 — Vendor Self-Assessment</h1>'+
+    '<h1>Survey v2 - Vendor Self-Assessment</h1>'+
     '<p class="note">Interactive read-only preview. Nothing is saved or submitted; answers reset on refresh. Mirrors the live survey\'s gating logic.</p>'+
     topBanner()+complianceSec()+modulesSec()+s3Sec();
   window.scrollTo(0,y);
@@ -208,8 +208,8 @@ app.addEventListener('focusout',e=>{ if(e.target.dataset.txt!==undefined) render
 // Optional shared-passphrase soft gate (when window.__GATE__ is a SHA-256 hex).
 async function sha256hex(s){ const b=await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)); return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join(''); }
 function gateScreen(){
-  app.innerHTML='<div class="gate-wrap"><h1>Survey v2 — preview</h1><p>Enter the access code to view this survey.</p><div class="gate-row"><input id="gpw" type="password" placeholder="Access code" autofocus><button id="gbtn">Enter</button></div><p id="gerr" class="gerr"></p></div>';
-  const go=async()=>{ try{ const h=await sha256hex(document.getElementById('gpw').value); if(h===window.__GATE__){ try{sessionStorage.setItem('ierp_unlocked','1');}catch(e){} render(); } else { document.getElementById('gerr').textContent='Incorrect code — try again.'; } }catch(e){ document.getElementById('gerr').textContent='Please open this page over https.'; } };
+  app.innerHTML='<div class="gate-wrap"><h1>Survey v2 - preview</h1><p>Enter the access code to view this survey.</p><div class="gate-row"><input id="gpw" type="password" placeholder="Access code" autofocus><button id="gbtn">Enter</button></div><p id="gerr" class="gerr"></p></div>';
+  const go=async()=>{ try{ const h=await sha256hex(document.getElementById('gpw').value); if(h===window.__GATE__){ try{sessionStorage.setItem('ierp_unlocked','1');}catch(e){} render(); } else { document.getElementById('gerr').textContent='Incorrect code - try again.'; } }catch(e){ document.getElementById('gerr').textContent='Please open this page over https.'; } };
   document.getElementById('gbtn').addEventListener('click',go);
   document.getElementById('gpw').addEventListener('keydown',e=>{ if(e.key==='Enter') go(); });
 }
